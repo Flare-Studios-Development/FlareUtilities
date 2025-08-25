@@ -1,0 +1,9 @@
+name: FlareUtilities
+version: '1.0-SNAPSHOT'
+main: gg.flarestudios.flareUtilities.FlareUtilities
+api-version: '1.21'
+prefix: LogPrefix
+load: STARTUP
+authors: [ Plugin Author ]
+description: Plugin Description
+website: Plugin Website
