@@ -1,27 +1,29 @@
-package gg.flarestudios.flareUtilities.inventorySaver;
+package gg.flarestudios.flareUtilities;
 
 import com.destroystokyo.paper.utils.PaperPluginLogger;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.*;
+import gg.flarestudios.flareUtilities.inventorySaver.InventorySaver;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class CommandsRegistrar {
-
+    // Defining argument for suggesting player in save/load command.
     Argument<?> noSelectorSuggestions = new PlayerArgument("target")
             .replaceSafeSuggestions(SafeSuggestions.suggest(info ->
                     Bukkit.getOnlinePlayers().toArray(new Player[0])
             ));
 
+    // Defining argument for suggesting a string -clear in save command.
     Argument<?> clear = new StringArgument("clear")
             .replaceSuggestions(ArgumentSuggestions.strings("-clear"));
 
-
+    // Building the /flare command
     public void buildCommands() {
-        new CommandAPICommand("flare")
-                .withSubcommand(new CommandAPICommand("inv")
+        new CommandAPICommand("flare").withPermission("flareutilities.command.flare")
+                .withSubcommand(new CommandAPICommand("inv").withPermission("flareutilities.command.flare.inv")
                         .withSubcommands(
-                                new CommandAPICommand("save")
+                                new CommandAPICommand("save").withPermission("flareutilities.command.flare.inv.save")
                                 .withOptionalArguments(noSelectorSuggestions).withOptionalArguments(clear)
                                         .executesPlayer((player, commandArguments) -> {
                                             Player target = (Player) commandArguments.get("target");
@@ -53,17 +55,18 @@ public class CommandsRegistrar {
                                             // Save inventory of the defined target without clearing it.
                                             if (commandArguments.get("target") != null && commandArguments.get("clear") == null) {
                                                 new InventorySaver().saveInventory(target);
+                                                // Ignore NPE risk on getName, it's checked in the command to be an online player.
                                                 PaperPluginLogger.getLogger("FlareUtilities").info("Saved " + target.getName() + "'s inventory.");
                                             }
                                             // Save inventory of the defined target with clearing it after.
                                             if (commandArguments.get("target") != null && commandArguments.get("clear") != null) {
                                                 new InventorySaver().saveInventory(target);
-                                                assert target != null;
+                                                // Ignore NPE risk on getName, it's checked in the command to be an online player.
                                                 PaperPluginLogger.getLogger("FlareUtilities").info("Saved " + target.getName() + "'s inventory and cleared it afterwards.");
                                                 target.getInventory().clear();
                                             }
                                         }),
-                                new CommandAPICommand("load")
+                                new CommandAPICommand("load").withPermission("flareutilities.command.flare.inv.load")
                                 .withOptionalArguments(noSelectorSuggestions)
                                         .executesPlayer((player, commandArguments) -> {
                                             Player target = (Player) commandArguments.get("target");

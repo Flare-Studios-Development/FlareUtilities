@@ -1,9 +1,9 @@
 name: FlareUtilities
-version: '1.0-SNAPSHOT'
+version: 'v1.0.0 Release'
 main: gg.flarestudios.flareUtilities.FlareUtilities
 api-version: '1.21'
-prefix: LogPrefix
+prefix: FlareUtilities
 load: STARTUP
-authors: [ Plugin Author ]
-description: Plugin Description
-website: Plugin Website
+authors: [ Antimony_Sb ]
+description: Add some flair with Flare.
+website: https://github.com/Flare-Studios-Development/FlareUtilities

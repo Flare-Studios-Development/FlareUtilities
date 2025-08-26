@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'gg.flarestudios'
-version = 'v1.0.0-Dev'
+version = 'v1.0.0-Release'
 
 repositories {
     maven {
@@ -13,13 +13,12 @@ repositories {
         url = 'https://repo.papermc.io/repository/maven-public/'
     }
     mavenCentral()
-
     // If you want to shade the NBT API as well
     maven { url = "https://repo.codemc.org/repository/maven-public/" }
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
     implementation "dev.jorel:commandapi-bukkit-shade-mojang-mapped:10.1.2"
 }
 

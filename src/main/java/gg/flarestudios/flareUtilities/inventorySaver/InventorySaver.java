@@ -13,19 +13,19 @@ import java.util.*;
 
 public class InventorySaver {
 
-    //Defining the folders
+    // Defining the folders
     private final File playerDataFolder;
     private final File backupFolder;
 
     public InventorySaver(){
-        // Init
+        // Creates the folders
         this.playerDataFolder = new File("plugins/FlareUtilities/Modules/InventorySaver/playerdata");
         this.backupFolder = new File(playerDataFolder, "backups");
-
+        // Throw error if the player data folder could not be created.
         if (!playerDataFolder.exists() && !playerDataFolder.mkdirs()){
             PaperPluginLogger.getLogger("FlareUtilities").severe("Failed to create data folder!");
         }
-
+        // Throw error if the backup data folder could not be created.
         if (!backupFolder.exists() && !backupFolder.mkdirs()){
             PaperPluginLogger.getLogger("FlareUtilities").severe("Failed to create backup folder!");
         }
@@ -33,34 +33,30 @@ public class InventorySaver {
 
     public void saveInventory(Player player){
         File file = getFile(player);
-
         if (file.exists()){
-            createVersionedBackup(player, file);
+            createBackup(player, file);
         }
-        YamlConfiguration configuration = new YamlConfiguration();
-
-        configuration.set("Player", player.getName());
+        YamlConfiguration config = new YamlConfiguration();
+        config.set("Player", player.getName());
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        configuration.set("Modified on", time);
+        config.set("Modified on", time);
         ItemStack[] armor = player.getInventory().getArmorContents();
-        configuration.set("Head", armor.length > 3 ? armor[3] : null);
-        configuration.set("Chest", armor.length > 2 ? armor[3] : null);
-        configuration.set("Legs", armor.length > 1 ? armor[3] : null);
-        configuration.set("Feet", armor.length > 0 ? armor[3] : null);
-
-        configuration.set("Inventory", player.getInventory().getContents());
-        configuration.set("EnderChest", player.getEnderChest().getContents());
-
+        config.set("Head", armor.length > 3 ? armor[3] : null);
+        config.set("Chest", armor.length > 2 ? armor[2] : null);
+        config.set("Legs", armor.length > 1 ? armor[1] : null);
+        config.set("Feet", armor.length > 0 ? armor[0] : null);
+        config.set("Inventory", player.getInventory().getContents());
+        config.set("Ender Chest", player.getEnderChest().getContents());
         try {
-            configuration.save(file);
+            config.save(file);
         } catch (IOException e) {
             PaperPluginLogger.getLogger("FlareUtilities").severe("Failed to safe inventory for " + player.getName() + "!");
         }
     }
 
-    private void createVersionedBackup(Player player, File file){
+    private void createBackup(Player player, File file){
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        File dateFolder = new File(backupFolder,player.getUniqueId() + "/" + date);
+        File dateFolder = new File(backupFolder,player.getUniqueId() + "-" + player.getName() + "/" + date);
         if (!dateFolder.exists() && !dateFolder.mkdirs()){
             PaperPluginLogger.getLogger("FlareUtilities").severe("Failed to create inventory backup folder for " + player.getName() + "!");
         }
@@ -78,7 +74,7 @@ public class InventorySaver {
     }
 
     private File getFile(Player player) {
-        return new File(playerDataFolder, player.getUniqueId() + ".yml");
+        return new File(playerDataFolder, player.getUniqueId() + "-" + player.getName() + ".yml");
     }
 
     private YamlConfiguration getConfig(File file){
@@ -130,7 +126,7 @@ public class InventorySaver {
         loadEnderChest(player);
     }
 
-    public void restoreFromLastBackup(Player player) {
+    private void restoreFromLastBackup(Player player) {
         File latestBackup = getLatestBackup(player);
         if (latestBackup == null) {
             PaperPluginLogger.getLogger("FlareUtilities").severe("No backup found for " + player.getName() + "!");
